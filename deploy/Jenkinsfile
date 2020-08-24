@@ -1,7 +1,7 @@
-podTemplate(label: 'jnlp-slave', cloud: 'kubernetes', containers: [
+podTemplate(containers: [
     containerTemplate(
-        name: 'jnlp', 
-        image: '192.168.161.151/ops/jenkins-slave', 
+        name: 'jenkinsjnlp', 
+        image: 'ronniehuang/jenkinsjnlpwithdocker', 
         alwaysPullImage: true 
     ),
   ],
@@ -14,22 +14,21 @@ podTemplate(label: 'jnlp-slave', cloud: 'kubernetes', containers: [
   imagePullSecrets: ['registry-pull-secret'],
 ) 
 {
-  node("jnlp-slave"){
+  node(POD_LABEL){
       stage('Git Checkout'){
-         checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '8ff98f83-997e-41f8-b2fb-ce1719282021', url: 'git@192.168.161.153:Team/TestProject.git']]])
+         checkout scm
       }
       stage('Unit Testing'){
       	echo "Unit Testing..."
       }
       stage('Build and Push Image'){
           sh '''
-          docker login -u louie -p 密码 192.168.161.151
-          docker build -t 192.168.161.151/projectdemo/testprodemo:latest -f WebApplication1/Dockerfile .
-          docker push 192.168.161.151/projectdemo/testprodemo:latest
+          docker build -t testprodemo:latest -f Dockerfile .
+          docker push testprodemo:latest
           '''
       }
       stage('Deploy to K8S'){
-          kubernetesDeploy configs: 'deploy/deploy.yaml', kubeConfig: [path: ''], kubeconfigId: '1cb90ef1-4a7f-40c9-a6dd-bb6994017da4', secretName: '', ssh: [sshCredentialsId: '*', sshServer: ''], textCredentials: [certificateAuthorityData: '', clientCertificateData: '', clientKeyData: '', serverUrl: 'https://']
+          kubernetesDeploy configs: 'deploy/deploy.yaml', kubeConfig: [path: ''], kubeconfigId: 'kube_config_text', secretName: '', ssh: [sshCredentialsId: '*', sshServer: ''], textCredentials: [certificateAuthorityData: '', clientCertificateData: '', clientKeyData: '', serverUrl: 'https://']
       }
       stage('Testing'){
           echo "Testing..."

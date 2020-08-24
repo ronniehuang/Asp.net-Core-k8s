@@ -1,8 +1,8 @@
-FROM 192.168.161.151/coresdk/aspnetcore AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
 WORKDIR /app
 EXPOSE 5001
 
-FROM 192.168.161.151/coresdk/aspnetcore-build AS build
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS build
 WORKDIR /src
 COPY . .
 RUN dotnet restore
