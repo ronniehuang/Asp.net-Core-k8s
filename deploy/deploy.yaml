@@ -15,11 +15,9 @@ spec:
         project: blog
         app: solo
     spec:
-      imagePullSecrets:
-      - name: registry-pull-secret
       containers:
       - name: solo
-        image: projectdemo/testprodemo:latest
+        image: ronniehuang/testprodemo:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -43,3 +41,4 @@ spec:
     port: 80
     targetPort: 80
   type: NodePort
+

@@ -21,12 +21,6 @@ podTemplate(containers: [
       stage('Unit Testing'){
       	echo "Unit Testing..."
       }
-      stage('Build and Push Image'){
-          sh '''
-          docker build -t testprodemo:latest -f Dockerfile .
-          docker push testprodemo:latest
-          '''
-      }
       stage('Deploy to K8S'){
           kubernetesDeploy configs: 'deploy/deploy.yaml', kubeConfig: [path: ''], kubeconfigId: 'kube_config_text', secretName: '', ssh: [sshCredentialsId: '*', sshServer: ''], textCredentials: [certificateAuthorityData: '', clientCertificateData: '', clientKeyData: '', serverUrl: 'https://']
       }
