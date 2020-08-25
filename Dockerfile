@@ -1,18 +1,17 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS base
-WORKDIR /app
-EXPOSE 5001
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+WORKDIR /app/WebApplication2
+EXPOSE 5000
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
-WORKDIR /src
-COPY . .
+# Copy csproj and restore as distinct layers
+COPY WebApplication2/*.csproj ./
 RUN dotnet restore
-WORKDIR /src
-RUN dotnet build -c Release -o /app
 
-FROM build AS publish
-RUN dotnet publish -c Release -o /app
+# Copy everything else and build
+COPY WebApplication2/. ./
+RUN dotnet publish -c Release -o out
 
-FROM base AS final
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
-COPY --from=publish /app .
+COPY --from=build-env /app/WebApplication2/out .
 ENTRYPOINT ["dotnet", "WebApplication2.dll"]
