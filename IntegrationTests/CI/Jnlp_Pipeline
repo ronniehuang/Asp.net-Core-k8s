@@ -8,19 +8,18 @@ podTemplate(containers: [
                 stage('checkout  code') {
                     checkout scm
                 }
+                
                 stage('build test') {
+                    dir("IntegrationTests"){
                     sh 'dotnet build "IntegrationTests.csproj"'
+                    }
                 }
                 stage('execution test') {
-                    sh 'dotnet build "IntegrationTests.csproj" -c Release'
-                }
-                stage('report publis') {
                     dir("IntegrationTests"){
-				allure([
-						includeProperties: false, jdk: '', reportBuildPoicy: 'ALWAYS', results: [[path: 'bin\\Release\\netcoreapp3.1\\allure-results']]
-						])
-					}
+                    sh 'dotnet test "IntegrationTests.csproj" -c Release'
+                    }
                 }
+                
             }
         }
     }
