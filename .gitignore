@@ -5,3 +5,5 @@
 /ApiDemo/obj
 /ApiDemo/bin
 .vs
+/IntegrationTests/obj
+/IntegrationTests/bin

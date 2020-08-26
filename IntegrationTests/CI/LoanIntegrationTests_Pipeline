@@ -1,0 +1,53 @@
+properties([
+    parameters([
+        choice(name: 'environment', choices: ['dev','test'], description: 'Environment'),
+		choice(name: 'Category', choices: ['ALL','Positive','Negative'], description: 'Select Test Category')
+    ])
+])
+
+node("ManualWithProxy")
+{
+	try {
+		lock("IntegrationTest")
+		{
+			stage('Preparation'){
+					checkout([$class: 'GitSCM',
+							branches: scm.branches,
+							doGenerateSubmoduleConfigurations: false,
+							extensions: scm.extensions + [
+								[$class: 'SubmoduleOption',
+								disableSubmodules: false,
+								parentCredentials: false,
+								recursiveSubmodules: false, 
+								reference: '',
+								trackingSubmodules: false]
+							], 
+							submoduleCfg: [], 
+							userRemoteConfigs: scm.userRemoteConfigs
+						])
+				}
+			stage('TestStage') {
+				catchError{
+				dir("IntegrationTests"){
+						bat "dotnet test --Release"
+					}
+				}
+			}
+			stage('Report')  {
+				dir("IntegrationTests"){
+				allure([
+						includeProperties: false, jdk: '', reportBuildPoicy: 'ALWAYS', results: [[path: 'bin\\Release\\netcoreapp3.1\\allure-results']]
+						])
+					}
+			}
+		}
+	}
+	catch (e) {
+		currentBuild.result = "FAILED"
+		throw e
+	  } finally {
+		
+		
+   }
+}
+
