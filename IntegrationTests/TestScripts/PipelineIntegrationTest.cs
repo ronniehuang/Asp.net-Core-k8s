@@ -15,7 +15,7 @@ namespace IntegrationTests.TestScripts
 {
     [TestFixture]
     [AllureNUnit]
-    [AllureSuite("LoanIntegrationTests")]
+    [AllureSuite("IntegrationTests")]
     [AllureDisplayIgnored]
     [NonParallelizable]
     public class PipelineIntegrationTest : AllureReportConfig
