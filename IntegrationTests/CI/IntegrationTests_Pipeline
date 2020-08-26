@@ -29,7 +29,7 @@ node("ManualWithProxy")
 			stage('TestStage') {
 				catchError{
 				dir("IntegrationTests"){
-						bat "dotnet test --Release"
+						bat "dotnet test -c Release"
 					}
 				}
 			}
