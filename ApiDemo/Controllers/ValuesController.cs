@@ -22,13 +22,13 @@ namespace WebApplication2.Controllers
             string jsonString = "";
             for(int i=0;i<files.Length;i++)
             {
-                jsonString += "{\"id\":\""+ files[i].Replace(".json","").Replace("Data\\","")+"\",\"name\":\"" +
+                jsonString += "{\"id\":\""+ files[i].Replace(".json","").Replace("Data/","")+"\",\"name\":\"" +
                     ReadJsonConfig(files[i], "name") +"\",\"value\":\""+
                     ReadJsonConfig(files[i], "value") + "\"}";
                 if (i < files.Length - 1)
                     jsonString += ",";
             }
-            return "{\"total\":\""+files.Length.ToString()+"\""+",data["+ jsonString + "]}";
+            return "{\"total\":\""+files.Length.ToString()+"\""+ ",\"data\":[" + jsonString + "]}";
         }
 
         // GET api/values/5
