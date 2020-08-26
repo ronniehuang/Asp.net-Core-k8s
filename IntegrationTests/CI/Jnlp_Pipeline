@@ -1,0 +1,27 @@
+podTemplate(containers: [
+    containerTemplate(name: 'netcore', image: 'mcr.microsoft.com/dotnet/core/sdk:3.1', ttyEnabled: true, command: 'cat')
+  ]) {
+
+    node(POD_LABEL) {
+        stage('integreation Test project') {
+            container('netcore') {
+                stage('checkout  code') {
+                    checkout scm
+                }
+                stage('build test') {
+                    sh 'dotnet build "IntegrationTests.csproj"'
+                }
+                stage('execution test') {
+                    sh 'dotnet build "IntegrationTests.csproj" -c Release'
+                }
+                stage('report publis') {
+                    dir("IntegrationTests"){
+				allure([
+						includeProperties: false, jdk: '', reportBuildPoicy: 'ALWAYS', results: [[path: 'bin\\Release\\netcoreapp3.1\\allure-results']]
+						])
+					}
+                }
+            }
+        }
+    }
+}

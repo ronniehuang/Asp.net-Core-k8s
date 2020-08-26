@@ -41,6 +41,7 @@ namespace IntegrationTests.Serivce
         }
         public BaseSteps VerifyCustomerJSONContent()
         {
+            StartAllureSteps("VerifyCustomerJSONContent", "");
             JObject jObject = JObject.Parse(responseMessage.Content.ReadAsStringAsync().Result);
             if (jObject["data"].Count() > 0)
                 jObject["data"].ToString().Should().NotBeNullOrEmpty();
@@ -51,7 +52,7 @@ namespace IntegrationTests.Serivce
                 jObject["data"][i]["name"].ToString().Should().NotBeNull();
                 jObject["data"][i]["value"].ToString().Should().NotBeNull();
             }
-            
+            StopAllureSteps("");
             return this;
         }
 
