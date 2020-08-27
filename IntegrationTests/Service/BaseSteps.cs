@@ -72,33 +72,9 @@ namespace IntegrationTests.Serivce
             return this;
         }
 
-        public BaseSteps VerifyLoanAccountContent()
-        {
-            JObject jObject = JObject.Parse(responseMessage.Content.ReadAsStringAsync().Result);
-            jObject["data"]["party"]["name"].ToString().Should().NotBeNull();
-            jObject["data"]["party"]["emailAddress"].ToString().Should().BeNullOrEmpty();
-            if (jObject["data"]["loans"].Count() > 0)
-                jObject["data"]["loans"].ToString().Should().NotBeNullOrEmpty();
-            return this;
-        }
         
-
-        public BaseSteps GetLoanSettlementAccounts(string baseUrl)
-        {
-            StartAllureSteps("GetLoanSettlementAccounts", "");
-            string settleUrl = baseUrl + "/loan-settlement-accounts";
-            AddUrlToStep(settleUrl);
-            Thread.Sleep(2000);
-            responseMessage = settleUrl.AllowAnyHttpStatus()
-                           .WithHeader("User-Agent", "IntegrationTest")
-                           .WithHeader("x-fapi-interaction-id", Guid.NewGuid().ToString())
-                           .GetAsync().Result;
-            StopAllureSteps(responseMessage.Content.ReadAsStringAsync().Result);
-
-            return this;
-        }
         /// <summary>
-        /// Format will be https://[API_ENV]/api/v1/Loan
+        /// Format will be https://[API_ENV]/api/values
         /// </summary>
         public static string MicroserviceBaseUrl => "http://192.168.1.118:30000/";
         
