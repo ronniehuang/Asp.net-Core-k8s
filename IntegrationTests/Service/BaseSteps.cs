@@ -15,7 +15,7 @@ namespace IntegrationTests.Serivce
     public class BaseSteps : Base.BaseComponentTest
     {
         private HttpResponseMessage responseMessage;
-        
+        private int MaxID;
         private TestDataManagement testDataManagement;
         private string accessNumber;
         public BaseSteps()
@@ -39,7 +39,14 @@ namespace IntegrationTests.Serivce
             VerifyCommonHttpStatus(responseMessage, httpStatusCode);
             return this;
         }
-        public BaseSteps VerifyCustomerJSONContent()
+        public BaseSteps VerifyContentInclude(string containsContent)
+        {
+            StartAllureSteps("VerifyCustomerJSONContent", "");
+            responseMessage.Content.ReadAsStringAsync().Result.Should().Contain(containsContent);
+            StopAllureSteps("");
+            return this;
+        }
+        public BaseSteps VerifyCustomersJSONContent()
         {
             StartAllureSteps("VerifyCustomerJSONContent", "");
             JObject jObject = JObject.Parse(responseMessage.Content.ReadAsStringAsync().Result);
@@ -55,9 +62,37 @@ namespace IntegrationTests.Serivce
             StopAllureSteps("");
             return this;
         }
+        public BaseSteps GetMaxID()
+        {
+            StartAllureSteps("VerifyCustomerJSONContent", "");
+            JObject jObject = JObject.Parse(responseMessage.Content.ReadAsStringAsync().Result);
+            if (jObject["data"].Count() > 0)
+                jObject["data"].ToString().Should().NotBeNullOrEmpty();
+            jObject["total"].Should().NotEqual("0");
+            MaxID = 0;
+            for (int i = 0; i < jObject["data"].Count(); i++)
+            {
+                if (int.Parse(jObject["data"][i]["id"].ToString()) > MaxID)
+                    MaxID = int.Parse(jObject["data"][i]["id"].ToString());
+            }
+            MaxID++;
+            StopAllureSteps("");
+            return this;
+        }
+        public BaseSteps PostCustmoerDetail(string baseUrl,string newName, string newValue)
+        {
+            string postContent = "{\"id\":\""+MaxID.ToString()+"\",\"name\":\""+ newName + "\",\"value\":\""+ newValue + "\"}";
+            StartAllureSteps("PostCustmoerDetail", "");
+            AddUrlToStep(baseUrl);
+            Thread.Sleep(2000);
+            responseMessage = baseUrl.AllowAnyHttpStatus()
+                           .WithHeader("User-Agent", "IntegrationTest")
+                           .WithHeader("x-fapi-interaction-id", Guid.NewGuid().ToString())
+                           .PostStringAsync(postContent).Result;
 
-        
-
+            StopAllureSteps(responseMessage.Content.ReadAsStringAsync().Result);
+            return this;
+        }
         public BaseSteps GetAllCustomerDetails(string baseUrl)
         {
             StartAllureSteps("GetAllCustomerDetails", "");

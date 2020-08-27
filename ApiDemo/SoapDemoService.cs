@@ -1,7 +1,7 @@
 ﻿using Models;
 using System;
 using System.Xml.Linq;
-public class SampleService : ISampleService
+public class SoapDemoService : ISoapDemoService
 {
     public string Test(string s)
     {

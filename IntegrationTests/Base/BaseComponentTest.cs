@@ -40,7 +40,7 @@ namespace IntegrationTests.Base
             allureSteps.StopStep(outputString);
         }
         
-        public void VerifyCommonHttpStatus(HttpResponseMessage responseMessage,HttpStatusCode httpStatusCode)
+        protected void VerifyCommonHttpStatus(HttpResponseMessage responseMessage,HttpStatusCode httpStatusCode)
         {
             allureSteps.StartStep("VerifyHttpStatus:"+ httpStatusCode.ToString(), "");
             responseMessage.StatusCode.Should().Be(httpStatusCode);

@@ -31,7 +31,7 @@ namespace WebApplication2.Controllers
                 if (i < files.Length - 1)
                     jsonString += ",";
             }
-            return "{\"total\":\""+files.Length.ToString()+"\""+ ",\"data\":[" + jsonString + "]}";
+            return Ok("{\"total\":\""+files.Length.ToString()+"\""+ ",\"data\":[" + jsonString + "]}");
         }
 
         // GET api/values/5
@@ -40,9 +40,9 @@ namespace WebApplication2.Controllers
         {
             string filename = "Data/" + id + ".json";
             if (System.IO.File.Exists(filename))
-                return "{\"id\":\"" + id + "\",\"name\":\"" +
+                return Ok("{\"id\":\"" + id + "\",\"name\":\"" +
                     ReadJsonConfig(filename, "name") + "\",\"value\":\"" +
-                    ReadJsonConfig(filename, "value") + "\"}";
+                    ReadJsonConfig(filename, "value") + "\"}");
             return NotFound();
         }
         
@@ -58,6 +58,8 @@ namespace WebApplication2.Controllers
                 string Name = orderList["name"].ToString();
                 string Value = orderList["value"].ToString();
                 string filename = "Data/" + id + ".json";
+                if (int.Parse(id)>=0)
+                    return NotFound();
                 if (System.IO.File.Exists(filename))
                     return NotFound();
                 else
@@ -66,7 +68,7 @@ namespace WebApplication2.Controllers
                     Name + "\",\"value\":\"" +
                     Value + "\"}";
                     System.IO.File.WriteAllText(filename, strReturn);
-                    return strReturn;
+                    return Created("",id);
                 }
 
             }
@@ -89,7 +91,7 @@ namespace WebApplication2.Controllers
                     Name + "\",\"value\":\"" +
                     Value + "\"}";
                     System.IO.File.WriteAllText(filename, strReturn);
-                    return strReturn;
+                    return Ok(strReturn);
                 }
                 else
                     return NotFound();
@@ -105,7 +107,7 @@ namespace WebApplication2.Controllers
             if (System.IO.File.Exists(filename))
             {
                 System.IO.File.Delete(filename);
-                return id.ToString();
+                return Ok(id.ToString());
             }
             else
                 return NotFound();
