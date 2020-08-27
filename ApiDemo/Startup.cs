@@ -29,7 +29,7 @@ namespace WebApplication2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddSingleton<ISampleService, SampleService>();
+            services.TryAddSingleton<ISoapDemoService, SoapDemoService>();
             services.AddControllers();
         }
 
@@ -52,7 +52,7 @@ namespace WebApplication2
                 endpoints.MapControllers();
             });
 
-            app.UseSoapEndpoint<ISampleService>("/SoapDemoService", new BasicHttpBinding(), SoapSerializer.XmlSerializer);
+            app.UseSoapEndpoint<ISoapDemoService>("/SoapDemoService", new BasicHttpBinding(), SoapSerializer.XmlSerializer);
         }
     }
 }

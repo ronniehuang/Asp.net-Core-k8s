@@ -2,7 +2,7 @@
 namespace Models
 {
     [ServiceContract]
-    public interface ISampleService
+    public interface ISoapDemoService
     {
         [OperationContract]
         string Test(string s);
