@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace WebApplication2.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class ValuesController : Controller
     {
         // GET api/values
@@ -36,26 +38,26 @@ namespace WebApplication2.Controllers
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
-            string filename = "Data//" + id + ".json";
+            string filename = "Data/" + id + ".json";
             if (System.IO.File.Exists(filename))
                 return "{\"id\":\"" + id + "\",\"name\":\"" +
                     ReadJsonConfig(filename, "name") + "\",\"value\":\"" +
                     ReadJsonConfig(filename, "value") + "\"}";
             return NotFound();
         }
-
+        
         // POST api/values
         [HttpPost]
-        public ActionResult<string> Post([FromBody]string value)
+        public async Task<ActionResult<string>> Post([FromForm] string value)
         {
             using (var reader = new StreamReader(Request.Body))
             {
-                var body = reader.ReadToEnd();
+                string body = await reader.ReadToEndAsync(); 
                 JObject orderList = JObject.Parse(body);
                 string id = orderList["id"].ToString();
                 string Name = orderList["name"].ToString();
                 string Value = orderList["value"].ToString();
-                string filename = "Data//" + id + ".json";
+                string filename = "Data/" + id + ".json";
                 if (System.IO.File.Exists(filename))
                     return NotFound();
                 else
@@ -72,15 +74,15 @@ namespace WebApplication2.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public ActionResult<string> Put(int id, [FromBody]string value)
+        public async Task<ActionResult<string>> Put(int id, [FromForm]string value)
         {
             using (var reader = new StreamReader(Request.Body))
             {
-                var body = reader.ReadToEnd();
+                string body = await reader.ReadToEndAsync();
                 JObject orderList = JObject.Parse(body);
                 string Name = orderList["name"].ToString();
                 string Value = orderList["value"].ToString();
-                string filename = "Data//" + id + ".json";
+                string filename = "Data/" + id + ".json";
                 if (System.IO.File.Exists(filename))
                 {
                     string strReturn = "{\"id\":\"" + id + "\",\"name\":\"" +
@@ -97,9 +99,9 @@ namespace WebApplication2.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public ActionResult<string> Delete(int id)
+        public async Task<ActionResult<string>> Delete(int id)
         {
-            string filename = "Data//" + id + ".json";
+            string filename = "Data/" + id + ".json";
             if (System.IO.File.Exists(filename))
             {
                 System.IO.File.Delete(filename);
