@@ -1,0 +1,32 @@
+{
+  "name": "cypress-cucumber-google-search",
+  "version": "1.0.0",
+  "description": "Example of cypress with cucumber",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run --spec \"**/*.feature\"",
+    "test:all": "cypress run --spec \"**/*.features\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronniehuang/Asp.net-Core-k8s.git"
+  },
+  "keywords": [
+    "cypress",
+    "cucumber",
+    "testing"
+  ],
+  "author": "Ronnie Huang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ronniehuang/Asp.net-Core-k8s/issues"
+  },
+  "homepage": "https://github.com/ronniehuang/Asp.net-Core-k8s#readme",
+  "dependencies": {
+    "cypress": "^5.1.0",
+    "cypress-cucumber-preprocessor": "^2.5.5"
+  },
+  "cypress-cucumber-preprocessor": {
+    "nonGlobalStepDefinitions": true
+  }
+}

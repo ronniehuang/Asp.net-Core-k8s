@@ -82,7 +82,7 @@ namespace IntegrationTests.Serivce
         public BaseSteps PostCustmoerDetail(string baseUrl,string newName, string newValue)
         {
             string postContent = "{\"id\":\""+MaxID.ToString()+"\",\"name\":\""+ newName + "\",\"value\":\""+ newValue + "\"}";
-            StartAllureSteps("PostCustmoerDetail", "");
+            StartAllureSteps("PostCustmoerDetail", postContent);
             AddUrlToStep(baseUrl);
             Thread.Sleep(2000);
             responseMessage = baseUrl.AllowAnyHttpStatus()

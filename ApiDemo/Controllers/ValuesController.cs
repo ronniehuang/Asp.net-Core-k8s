@@ -7,8 +7,10 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using System.Data;
+using Newtonsoft.Json;
 
-namespace WebApplication2.Controllers
+namespace ApiDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -18,32 +20,32 @@ namespace WebApplication2.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-            string SaveFileFolder = "Data";
-            string[] files = Directory.GetFiles(SaveFileFolder, "*.json", System.IO.SearchOption.AllDirectories);
-            if ( files.Length <= 0 )
-                return NotFound();
-            string jsonString = "";
-            for(int i=0;i<files.Length;i++)
+            CommonDb db = new CommonDb();
+            DataSet ds = new DataSet();
+            db.GetDataSet("select * from tNameList", out ds);
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
-                jsonString += "{\"id\":\""+ ReadJsonConfig(files[i], "id") + "\",\"name\":\"" +
-                    ReadJsonConfig(files[i], "name") +"\",\"value\":\""+
-                    ReadJsonConfig(files[i], "value") + "\"}";
-                if (i < files.Length - 1)
-                    jsonString += ",";
+                string returnJson = "{\"total\":" + ds.Tables[0].Rows.Count.ToString() + ",\"data\":" + JsonConvert.SerializeObject(ds.Tables[0], Formatting.Indented) + "}";
+                return Ok(returnJson);
             }
-            return Ok("{\"total\":\""+files.Length.ToString()+"\""+ ",\"data\":[" + jsonString + "]}");
+            else
+                return NotFound();
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
-            string filename = "Data/" + id + ".json";
-            if (System.IO.File.Exists(filename))
-                return Ok("{\"id\":\"" + id + "\",\"name\":\"" +
-                    ReadJsonConfig(filename, "name") + "\",\"value\":\"" +
-                    ReadJsonConfig(filename, "value") + "\"}");
-            return NotFound();
+            CommonDb db = new CommonDb();
+            DataSet ds = new DataSet();
+            db.GetDataSet("select top 1 * from tNameList where id="+id.ToString(), out ds);
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0 )
+            {
+                string returnJson =  JsonConvert.SerializeObject(ds.Tables[0], Formatting.Indented) ;
+                return Ok(returnJson);
+            }
+            else
+                return NotFound();
         }
         
         // POST api/values
@@ -54,23 +56,17 @@ namespace WebApplication2.Controllers
             {
                 string body = await reader.ReadToEndAsync(); 
                 JObject orderList = JObject.Parse(body);
-                string id = orderList["id"].ToString();
                 string Name = orderList["name"].ToString();
                 string Value = orderList["value"].ToString();
-                string filename = "Data/" + id + ".json";
-                if (int.Parse(id)>=0)
-                    return NotFound();
-                if (System.IO.File.Exists(filename))
-                    return NotFound();
-                else
+                CommonDb db = new CommonDb();
+                DataSet ds = new DataSet();
+                db.GetDataSet("select top 1 * from tNameList where name='"+ Name + "'", out ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    string strReturn = "{\"id\":\"" + id + "\",\"name\":\"" +
-                    Name + "\",\"value\":\"" +
-                    Value + "\"}";
-                    System.IO.File.WriteAllText(filename, strReturn);
-                    return Created("",id);
+                    return NotFound();
                 }
-
+                db.ExecSql("insert into tNameList (name,value) values('"+ Name + "','"+ Value + "')");
+                return Created("","");
             }
         }
 
@@ -84,33 +80,37 @@ namespace WebApplication2.Controllers
                 JObject orderList = JObject.Parse(body);
                 string Name = orderList["name"].ToString();
                 string Value = orderList["value"].ToString();
-                string filename = "Data/" + id + ".json";
-                if (System.IO.File.Exists(filename))
+                CommonDb db = new CommonDb();
+                DataSet ds = new DataSet();
+                db.GetDataSet("select top 1 * from tNameList where id='" + id.ToString() + "'", out ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    string strReturn = "{\"id\":\"" + id + "\",\"name\":\"" +
-                    Name + "\",\"value\":\"" +
-                    Value + "\"}";
-                    System.IO.File.WriteAllText(filename, strReturn);
-                    return Ok(strReturn);
-                }
-                else
                     return NotFound();
-
+                }
+                db.GetDataSet("select top 1 * from tNameList where name='" + Name + "' and id<>"+id.ToString(), out ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    return NotFound();
+                }
+                db.ExecSql("update tNameList set name='" + Name + "',value='" + Value + "' where id="+id.ToString());
+                return Ok(id.ToString());
             }
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<string>> Delete(int id)
+        public ActionResult<string> Delete(int id)
         {
-            string filename = "Data/" + id + ".json";
-            if (System.IO.File.Exists(filename))
+            CommonDb db = new CommonDb();
+            DataSet ds = new DataSet();
+            db.GetDataSet("select top 1 * from tNameList where id='" + id.ToString() + "'", out ds);
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
-                System.IO.File.Delete(filename);
-                return Ok(id.ToString());
-            }
-            else
                 return NotFound();
+            }
+            
+            db.ExecSql("delete from tNameList  where id=" + id.ToString());
+            return Ok(id.ToString());
         }
 
         protected string ReadJsonConfig(string file, string strKey)
