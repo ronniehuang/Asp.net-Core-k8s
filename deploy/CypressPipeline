@@ -1,0 +1,21 @@
+podTemplate(containers: [
+    containerTemplate(name: 'cypress', image: 'ronniehuang/cypress-cumcumber:latest', ttyEnabled: true, command: 'cat')
+  ]) {
+
+    node(POD_LABEL) {
+        stage('integreation Test project') {
+            container('cypress') {
+                stage('checkout  code') {
+                    checkout scm
+                }
+                
+                stage('execution test') {
+                    dir("GoogleDemo"){
+                    sh 'cypress run'
+                    }
+                }
+                
+            }
+        }
+    }
+}
