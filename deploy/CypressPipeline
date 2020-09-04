@@ -3,6 +3,7 @@ podTemplate(containers: [
   ]) {
 
     node(POD_LABEL) {
+	currentBuild.displayName = "${browser}"
         stage('GoogleDemo Test project') {
             container('cypress') {
                 stage('checkout  code') {
@@ -13,7 +14,7 @@ podTemplate(containers: [
                 stage('execution test') {
                     dir("GoogleDemo"){
                         catchError{
-                            sh 'cypress run'
+                            sh 'NO_COLOR=1 cypress run --browser ${browser}'
                         }
                     }
                 }
