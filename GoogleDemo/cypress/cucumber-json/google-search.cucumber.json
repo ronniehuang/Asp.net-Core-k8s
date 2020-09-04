@@ -22,7 +22,7 @@
             "name": "I visit google.com",
             "result": {
               "status": "passed",
-              "duration": 1652000000
+              "duration": 3311000000
             }
           },
           {
@@ -32,7 +32,7 @@
             "name": "I type in a search query",
             "result": {
               "status": "passed",
-              "duration": 2417000000
+              "duration": 4638000000
             }
           },
           {
@@ -42,7 +42,7 @@
             "name": "I should see related results",
             "result": {
               "status": "passed",
-              "duration": 30000000
+              "duration": 37000000
             }
           }
         ]

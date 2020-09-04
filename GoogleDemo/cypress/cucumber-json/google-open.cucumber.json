@@ -22,7 +22,7 @@
             "name": "I visit google.com",
             "result": {
               "status": "passed",
-              "duration": 2408000000
+              "duration": 2444000000
             }
           },
           {
@@ -32,7 +32,7 @@
             "name": "I should see title",
             "result": {
               "status": "passed",
-              "duration": 18000000
+              "duration": 19000000
             }
           }
         ]
