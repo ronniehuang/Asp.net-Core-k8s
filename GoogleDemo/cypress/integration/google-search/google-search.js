@@ -1,7 +1,4 @@
 import { Given, When, Then } from 'cypress-cucumber-preprocessor/steps';
-    Given('I visit google.com', () => {
-        cy.visit('http://google.com')
-    });
     When('I type in a search query', () => {
         cy.get('[type="text"]')
             .type('BNZ')
@@ -11,3 +8,4 @@ import { Given, When, Then } from 'cypress-cucumber-preprocessor/steps';
         cy.get('#search')
             .contains('BNZ');
         });
+	
