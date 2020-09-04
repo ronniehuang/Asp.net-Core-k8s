@@ -7,3 +7,5 @@
 .vs
 /IntegrationTests/obj
 /IntegrationTests/bin
+/GoogleDemo/cypress/cucumber-json
+/GoogleDemo/cypress/reports
