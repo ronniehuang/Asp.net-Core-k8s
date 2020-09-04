@@ -24,9 +24,19 @@
   "homepage": "https://github.com/ronniehuang/Asp.net-Core-k8s#readme",
   "dependencies": {
     "cypress": "^5.1.0",
-    "cypress-cucumber-preprocessor": "^2.5.5"
+    "cypress-cucumber-preprocessor": "^2.5.5",
+    "multiple-cucumber-html-reporter": "^1.18.0"
   },
   "cypress-cucumber-preprocessor": {
-    "nonGlobalStepDefinitions": true
+    "nonGlobalStepDefinitions": true,
+    "cucumberJson": {
+      "generate": true,
+      "outputFolder": "cypress/cucumber-json",
+      "filePrefix": "",
+      "fileSuffix": ".cucumber"
+    }
+  },
+  "devDependencies": {
+    "cucumber-html-reporter": "^5.2.0"
   }
 }
