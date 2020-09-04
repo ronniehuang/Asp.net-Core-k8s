@@ -1,17 +1,25 @@
 podTemplate(containers: [
-    containerTemplate(name: 'cypress', image: 'ronniehuang/cypress-cumcumber:latest', ttyEnabled: true, command: 'cat')
+    containerTemplate(name: 'cypress', image: 'ronniehuang/cypress-cucumber:latest', ttyEnabled: true, command: 'cat')
   ]) {
 
     node(POD_LABEL) {
-        stage('integreation Test project') {
+        stage('GoogleDemo Test project') {
             container('cypress') {
                 stage('checkout  code') {
+                    sh 'rm -f -R GoogleDemo'
                     checkout scm
                 }
                 
                 stage('execution test') {
                     dir("GoogleDemo"){
-                    sh 'cypress run'
+                        catchError{
+                            sh 'cypress run'
+                        }
+                    }
+                }
+                stage('publish report') {
+                    dir("GoogleDemo"){
+                        cucumber fileIncludePattern: '**/*.json', jsonReportDirectory: 'cypress/cucumber-json/', reportTitle: 'DemoReport', sortingMethod: 'ALPHABETICAL'
                     }
                 }
                 
