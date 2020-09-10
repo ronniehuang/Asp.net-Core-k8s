@@ -20,15 +20,6 @@ spec:
         image: ronniehuang/testprodemo:latest
         ports:
         - containerPort: 80
-        spec:
-  maxReplicas: 10
-  minReplicas: 1
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: k8s-netcore-demo
-  targetCPUUtilizationPercentage: 10
-
 ---
 # ------------------- Service ------------------- #
 kind: Service
@@ -46,3 +37,17 @@ spec:
       targetPort: 80
   selector:
     k8s-app: k8s-netcore-demo
+
+#---------------autoscaling -------------------------------#    
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: k8s-netcore-demo
+  targetCPUUtilizationPercentage: 10
