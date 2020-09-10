@@ -20,6 +20,15 @@ spec:
         image: ronniehuang/testprodemo:latest
         ports:
         - containerPort: 80
+        spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: k8s-netcore-demo
+  targetCPUUtilizationPercentage: 10
+
 ---
 # ------------------- Service ------------------- #
 kind: Service
