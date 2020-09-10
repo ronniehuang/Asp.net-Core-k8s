@@ -22,7 +22,7 @@ namespace ApiDemo.Controllers
         {
             CommonDb db = new CommonDb();
             DataSet ds = new DataSet();
-            db.GetDataSet("select * from tNameList", out ds);
+            db.GetDataSet("spApiDemoNameList 1,0,'',''", out ds);
             if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
                 string returnJson = "{\"total\":" + ds.Tables[0].Rows.Count.ToString() + ",\"data\":" + JsonConvert.SerializeObject(ds.Tables[0], Formatting.Indented) + "}";
@@ -38,10 +38,11 @@ namespace ApiDemo.Controllers
         {
             CommonDb db = new CommonDb();
             DataSet ds = new DataSet();
-            db.GetDataSet("select top 1 * from tNameList where id="+id.ToString(), out ds);
+            db.GetDataSet("spApiDemoNameList 2,'"+ id.ToString()+ "','',''", out ds);
             if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0 )
             {
-                string returnJson =  JsonConvert.SerializeObject(ds.Tables[0], Formatting.Indented) ;
+                DataRow dr = ds.Tables[0].Rows[0];
+                string returnJson = "{\"id\": 1,\"name\": \""+ dr["name"].ToString()+ "\",\"value\": \"" + dr["value"].ToString() + "\",\"intime\": \"" + dr["intime"].ToString() + "\"}";
                 return Ok(returnJson);
             }
             else
@@ -60,13 +61,12 @@ namespace ApiDemo.Controllers
                 string Value = orderList["value"].ToString();
                 CommonDb db = new CommonDb();
                 DataSet ds = new DataSet();
-                db.GetDataSet("select top 1 * from tNameList where name='"+ Name + "'", out ds);
+                db.GetDataSet("spApiDemoNameList 3,0,'" + Name + "','"+ Value + "'", out ds);
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    return NotFound();
+                   return Created("","");
                 }
-                db.ExecSql("insert into tNameList (name,value) values('"+ Name + "','"+ Value + "')");
-                return Created("","");
+                return NotFound();
             }
         }
 
@@ -82,18 +82,12 @@ namespace ApiDemo.Controllers
                 string Value = orderList["value"].ToString();
                 CommonDb db = new CommonDb();
                 DataSet ds = new DataSet();
-                db.GetDataSet("select top 1 * from tNameList where id='" + id.ToString() + "'", out ds);
+                db.GetDataSet("spApiDemoNameList 4,"+ id + ",'" + Name + "','" + Value + "'", out ds);
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    return NotFound();
+                    return Ok(id.ToString());
                 }
-                db.GetDataSet("select top 1 * from tNameList where name='" + Name + "' and id<>"+id.ToString(), out ds);
-                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                {
-                    return NotFound();
-                }
-                db.ExecSql("update tNameList set name='" + Name + "',value='" + Value + "' where id="+id.ToString());
-                return Ok(id.ToString());
+                return NotFound();
             }
         }
 
@@ -101,16 +95,17 @@ namespace ApiDemo.Controllers
         [HttpDelete("{id}")]
         public ActionResult<string> Delete(int id)
         {
-            CommonDb db = new CommonDb();
-            DataSet ds = new DataSet();
-            db.GetDataSet("select top 1 * from tNameList where id='" + id.ToString() + "'", out ds);
-            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            using (var reader = new StreamReader(Request.Body))
             {
+                CommonDb db = new CommonDb();
+                DataSet ds = new DataSet();
+                db.GetDataSet("spApiDemoNameList 5," + id + ",'',''", out ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    return Ok(id.ToString());
+                }
                 return NotFound();
             }
-            
-            db.ExecSql("delete from tNameList  where id=" + id.ToString());
-            return Ok(id.ToString());
         }
 
         protected string ReadJsonConfig(string file, string strKey)
