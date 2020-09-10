@@ -54,7 +54,7 @@ namespace ApiDemo.Controllers
             catch (Exception ex)
             {                
                 string strErr;
-                strErr = ("Open Database Error£º" + ex.Message);
+                strErr = ("Open Database Error:" + ex.Message);
             }
         }
 
@@ -69,7 +69,7 @@ namespace ApiDemo.Controllers
             catch (Exception ex)
             {
                 string strErr;
-                strErr = ("Open Database Error£º" + ex.Message);
+                strErr = ("Open Database Error:" + ex.Message);
 
                 return false;
             }
