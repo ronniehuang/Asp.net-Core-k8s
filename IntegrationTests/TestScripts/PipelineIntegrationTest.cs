@@ -23,6 +23,7 @@ namespace IntegrationTests.TestScripts
 
         [Test(Description = "Get Customer details")]
         [Category("Customers")]
+        [Category("Production")]
         public void GetAllCustomerDetails()
         {
             new Serivce.BaseSteps()
@@ -163,8 +164,9 @@ namespace IntegrationTests.TestScripts
                 .DeleteCustmoerDetail(Serivce.BaseSteps.MicroserviceBaseUrl + "api/values")
                 .VerifyHttpStatus(HttpStatusCode.NotFound);
         }
-        [Test(Description = "GEt Customer details with exists id")]
+        [Test(Description = "Get Customer details with exists id")]
         [Category("Customers")]
+        [Category("Production")]
         public void GetOneCustomerDetails_Success()
         {
             new Serivce.BaseSteps()
@@ -182,7 +184,7 @@ namespace IntegrationTests.TestScripts
                 .VerifyHttpStatus(HttpStatusCode.OK)
                 .VerifyCustomerJSONContent();
         }
-        [Test(Description = "GEt Customer details with not exists id")]
+        [Test(Description = "Get Customer details with not exists id")]
         [Category("Customers")]
         public void GetOneCustomerDetails_Fail()
         {

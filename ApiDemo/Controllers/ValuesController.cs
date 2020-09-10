@@ -33,7 +33,14 @@ namespace ApiDemo.Controllers
             db.CloseDatabase();
             return NotFound();
         }
-
+        // GET api/values/heartbeat
+        [HttpGet("heartbeat")]
+        public async Task<ActionResult<string>> heartBeat()
+        {
+            await WaitAndApologizeAsync();
+            return Ok(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+ 
+        }
         // GET api/values/5
         [HttpGet("{id}")]
         public async Task<ActionResult<string>> Get(int id)
