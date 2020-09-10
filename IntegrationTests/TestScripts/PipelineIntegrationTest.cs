@@ -69,6 +69,31 @@ namespace IntegrationTests.TestScripts
                 .VerifyHttpStatus(HttpStatusCode.OK)
                 .VerifyContentIncludeNewName();
         }
+        [Test(Description = "add Customer details with name not in")]
+        [Category("Customers")]
+        [TestCase("Name1")]
+        [TestCase("Name2")]
+        [TestCase("Name3")]
+        public void CreateCustomerDetailsSameValue_Success(string testcase)
+        {
+            new Serivce.BaseSteps()
+                //Given
+                .SetTestDataByKey("AccessNumber:L1")
+                //When
+                .GetAllCustomerDetails(Serivce.BaseSteps.MicroserviceBaseUrl + "api/values")
+                //Then
+                .VerifyHttpStatus(HttpStatusCode.OK)
+                .VerifyCustomersJSONContent()
+                .GetNewName()
+                //then
+                .PostCustmoerDetail(Serivce.BaseSteps.MicroserviceBaseUrl + "api/values")
+                .VerifyHttpStatus(HttpStatusCode.Created)
+                //When
+                .GetAllCustomerDetails(Serivce.BaseSteps.MicroserviceBaseUrl + "api/values")
+                //Then
+                .VerifyHttpStatus(HttpStatusCode.OK)
+                .VerifyContentIncludeNewName();
+        }
         [Test(Description = "add Customer details with exists name")]
         [Category("Customers")]
         public void CreateCustomerDetails_Fail()
