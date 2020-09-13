@@ -15,11 +15,37 @@ podTemplate(containers: [
                     }
                 }
                 stage('execution test') {
-                    dir("IntegrationTests"){
-                    sh 'dotnet test "IntegrationTests.csproj" -c Release'
+                    catchError {
+                        dir("IntegrationTests"){
+                        sh 'dotnet test "IntegrationTests.csproj" -c Release'
+                        sh 'chmod 777 bin/Release/netcoreapp3.1/allure-results'
+                        }
                     }
                 }
                 
+            }
+            stage('report') {
+                /*sh """
+                    curl -o allure-2.7.0.tgz -Ls https://dl.bintray.com/qameta/generic/io/qameta/allure/allure/2.7.0/allure-2.7.0.tgz 
+                    tar -zxvf allure-2.7.0.tgz -C $HOME   
+                    $HOME/allure-2.7.0/bin/allure --version
+                    export PATH=$HOME/allure-2.7.0/bin:$PATH 
+                    allure generate IntegrationTests/bin/Release/netcoreapp3.1/allure-results/ --clean
+                    tar -czvf allureReport.tar.gz allure-report
+                """
+                archiveArtifacts 'allureReport.tar.gz'*/
+                allure([
+						includeProperties: false,
+						jdk: '',
+						properties: [],
+						reportBuildPolicy: 'ALWAYS',
+						results: [[path: 'IntegrationTests/bin/Release/netcoreapp3.1/allure-results']]
+				])
+				sh """
+                    /home/jenkins/agent/tools/ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstallation/allure/bin/allure generate IntegrationTests/bin/Release/netcoreapp3.1/allure-results/ --clean
+                    tar -czvf allureReport.tar.gz allure-report
+                """
+                archiveArtifacts 'allureReport.tar.gz'
             }
         }
     }
