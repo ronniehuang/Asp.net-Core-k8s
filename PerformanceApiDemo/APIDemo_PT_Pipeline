@@ -7,7 +7,7 @@ properties([
 	])
 	
 podTemplate(containers: [
-    containerTemplate(name: 'jmeter', image: 'ronniehuang/jmeter-groovy:latest', ttyEnabled: true, command: 'cat')
+    containerTemplate(name: 'jmeter', image: 'ronniehuang/jmeter-groovy:latest', ttyEnabled: true, command: 'cat',alwaysPullImage: true)
   ]) {
   lock("ApiDemoPerformance"){stage('GoogleDemo Test project') {
   
@@ -69,7 +69,7 @@ podTemplate(containers: [
 		stage('Teardown') {
 			catchError {
 				dir(ReportFolder) {
-					publishHTML reportDir: '.', // this archives the entire target folder
+					publishHTML reportDir: '*.html,*.csv,*.jtl', // this archives the entire target folder
 									reportFiles: findFiles(glob: '*.html').join(','), 
 									reportTitles: '',
 									reportName: 'Detailed Results', 

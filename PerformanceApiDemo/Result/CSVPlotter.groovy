@@ -15,7 +15,7 @@ DTFORMAT = 'yyyy-MM-dd HH:mm:ss.SSS'
 MAXMILLIS = ((args as List)[0] ?: 20000).toLong()
 TPMINTERVAL = 60000 // 1 minute
 
-//@Grab('org.knowm.xchart:xchart:3.2.2')
+@Grab('org.knowm.xchart:xchart:3.2.2')
 import static org.knowm.xchart.style.markers.SeriesMarkers.CIRCLE
 import static org.knowm.xchart.style.markers.SeriesMarkers.NONE
 import static org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Scatter
