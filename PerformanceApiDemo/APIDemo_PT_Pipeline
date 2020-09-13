@@ -7,14 +7,14 @@ properties([
 	])
 	
 podTemplate(containers: [
-    containerTemplate(name: 'cypress', image: 'ronniehuang/cypress-cucumber:latest', ttyEnabled: true, command: 'cat')
+    containerTemplate(name: 'jmeter', image: 'ronniehuang/jmeter-groovy:latest', ttyEnabled: true, command: 'cat')
   ]) {
-	
-	lock("ApiDemoPerformance")
-		{
+  lock("ApiDemoPerformance"){stage('GoogleDemo Test project') {
+  
+    container('jmeter') {
 		def MainFolder = "PerformanceApiDemo"
 		def ReportFolder = "PerformanceApiDemo/Result"
-		def jmeter = "${tool(name: 'jmeter')}/bin/jmeter"
+		def jmeter = "${JMETER_HOME}/bin/jmeter"
 		def loadEnv = "$params.environment"
 		def loadtype = "$params.loadType"
 		def DurationSeconds = ("$params.duration").toInteger()*60
@@ -77,6 +77,5 @@ podTemplate(containers: [
 				}
 			}
 		}
-	}
-
+	}}}
 }
