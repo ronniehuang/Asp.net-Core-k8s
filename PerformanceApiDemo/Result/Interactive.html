@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <meta charset='UTF-8' />
+        <title>Interactive Chart</title>
+        <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    </head>
+    <body style='margin: 30px 0 0 0; padding: 0px'>
+        <div style='height: 20px; position: absolute; top:5; font: 100% verdana,arial,helvetica;'>
+            File: 
+            <select id='source-selector'><!--TODO populate list with whatever files the test produced-->
+                <option>rt_PT_ResponseTime_ApiDemo.csv</option>
+            </select>
+        </div>
+        <div id='plot' style='width:100%; height:100%;'></div>
+        <script>
+            var sourceSelector = document.querySelector('#source-selector');
+            sourceSelector.addEventListener('change', function (){ plotFile(sourceSelector.value); }, false);
+            plotFile(sourceSelector.value);
+            
+            function plotFile(source) {
+                Plotly.d3.csv(source, function processData(rows) {
+                    var scatter = source.match(/^rt_/) != null; // use file name to distinguish response time and monitoring charts
+                    var traces = {};
+                    for (var i=0; i<rows.length; i++) {
+                        var label = rows[i]['label'];
+                        var value = scatter ? rows[i]['elapsed'] : rows[i]['responseMessage'];
+                        var timestamp = rows[i]['timeStamp'].trim();
+                        if (timestamp.match(/^[0-9]+$/)) timestamp = new Date(parseInt(timestamp)-new Date().getTimezoneOffset()/60*1000);
+                        var hovertext = rows[i]['UserName'];
+
+                        traces[label] = traces[label] || (scatter ? 
+                            { x: [], y: [], text: [], type: 'scatter', mode: 'markers', 'hoverinfo': 'x+y+text', name: label } :
+                            { x: [], y: [], text: [], type: 'line', name: label }); 
+                        traces[label].x.push(timestamp);
+                        traces[label].y.push(value);
+                        traces[label].text.push(hovertext);
+                    }
+                    var layout = { 
+                        xaxis: { title: 'Time' },
+                        yaxis: { title: scatter ? 'Milliseconds' : 'Measured Value' }, 
+                        hovermode: 'closest'
+                    };
+                    traces = Object.keys(traces).map(function(key){return traces[key]}); // convert map to array of values
+                    Plotly.newPlot('plot', traces, layout);
+                });
+            }
+        </script>
+    </body>
+</html>

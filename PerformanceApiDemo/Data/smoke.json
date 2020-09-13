@@ -1,0 +1,10 @@
+{
+    "MainThreads": "1",
+	"MainThreadsRampup": "1",
+	"MaxThroughput":"2",
+	"GetSingleID":"100",
+	"PostName":"100",
+	"PutName":"100",
+	"DeleteName":"100"
+}
+

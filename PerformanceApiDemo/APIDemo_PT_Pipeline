@@ -1,0 +1,82 @@
+properties([
+		parameters([
+			string(name: 'duration', defaultValue: '60', description: 'Duration of the test in minutes'),
+			choice(name: 'environment', choices: ['LoadEnv.json', 'SITEnv.json'], description: 'Environment configuration'),
+			choice(name: 'loadType', choices: ['smoke.json','CurrentLoad.json','FutureLoad.json'], description: 'load type')
+		])
+	])
+	
+podTemplate(containers: [
+    containerTemplate(name: 'cypress', image: 'ronniehuang/cypress-cucumber:latest', ttyEnabled: true, command: 'cat')
+  ]) {
+	
+	lock("ApiDemoPerformance")
+		{
+		def MainFolder = "PerformanceApiDemo"
+		def ReportFolder = "PerformanceApiDemo/Result"
+		def jmeter = "${tool(name: 'jmeter')}/bin/jmeter"
+		def loadEnv = "$params.environment"
+		def loadtype = "$params.loadType"
+		def DurationSeconds = ("$params.duration").toInteger()*60
+					
+		stage('Prepare Testing Data'){
+			checkout scm
+
+			dir(MainFolder) {
+				sh 'rm -f -R Result/ErrorLog_ApiDemo.jtl'
+				sh 'rm -f -R Result/rt_PT_ResponseTime_ApiDemo.csv'
+			}
+		}
+		stage('Test') {
+				catchError {
+				parallel(
+					Monitor:{
+						dir(ReportFolder) {
+							bat "echo 'if  monitor'"
+						}
+					},
+					Loadgen:{
+						dir(MainFolder) {
+							bat "$jmeter -n -t Scripts/ApiDemo.jmx -JDuration=$DurationSeconds -JEnvFile=$loadEnv -JLoadFile=$loadtype -j Result/PT_ApiDemo.log"
+						}
+					}
+				)}
+		}
+		stage('Results') {
+			catchError {
+				dir(MainFolder) {
+					bat "grep -e 'All thread groups have been started' -e 'Notifying test listeners of end of test' result/PT_ApiDemo.log   | tr ',' ' '   | cut -d' ' -f1-2  1>Result/test_time"
+				}
+				dir(ReportFolder) {
+					withEnv(["PATH+GROOVY=${tool(name: 'groovy')}/bin"]) {
+						withEnv(["PATH+JMETER=${tool(name: 'jmeter')}/bin"]) { // JMeterPlotter needs PATH entry
+							sh """
+								groovy -e "new JMeterPlotter(base: '../Result').input('rt_PT_ResponseTime_ApiDemo.csv') .output('../Result/ResponseTimes.html').run('--paint-markers yes --line-weight 0 --plugin-type ResponseTimesOverTime')"
+							"""
+							
+						}
+						sh """
+							cat ../Result/ErrorLog_ApiDemo.jtl  | groovy ErrorReport.groovy       > Errors.html
+							cat ../Result/rt_PT_ResponseTime_ApiDemo.csv   | groovy CSVPlotter.groovy  10000 > AllTransactions.html
+						"""
+					}
+				}
+				dir(ReportFolder) {
+					perfReport configType: 'PRT', modeOfThreshold: true, nthBuildNumber: currentBuild.previousBuild.number, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 20.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 10.0, relativeUnstableThresholdPositive: 10.0, sourceDataFiles: 'rt_PT_ResponseTime_ApiDemo.csv'
+				}
+			}
+		}
+		stage('Teardown') {
+			catchError {
+				dir(ReportFolder) {
+					publishHTML reportDir: '.', // this archives the entire target folder
+									reportFiles: findFiles(glob: '*.html').join(','), 
+									reportTitles: '',
+									reportName: 'Detailed Results', 
+									keepAll: true, alwaysLinkToLastBuild: false, allowMissing: true
+				}
+			}
+		}
+	}
+
+}
