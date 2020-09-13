@@ -1,0 +1,6 @@
+{
+    "ServerName": "192.168.1.118",
+	"ServerPort": "30000",
+	"Protocol":"http"
+}
+

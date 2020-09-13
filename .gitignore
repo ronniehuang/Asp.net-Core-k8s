@@ -10,3 +10,5 @@
 /GoogleDemo/cypress/cucumber-json
 /GoogleDemo/cypress/reports
 /PerformanceApiDemo/jmeter.log
+/PerformanceApiDemo/Result/ErrorLog_ApiDemo.jtl
+/PerformanceApiDemo/Result/rt_PT_ResponseTime_ApiDemo.csv
