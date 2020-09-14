@@ -22,8 +22,8 @@ class JMeterPlotter {
     def width(int width)        { this.width   = width;   this }
 
     private Map pngs             // filename to image map (internal, temp)
-    private String plotCommand = System.properties['os.name'].toLowerCase().contains('windows') ? 'JMeterPluginsCMD.bat' : 'JMeterPluginsCMD.sh'
-
+    //private String plotCommand = System.properties['os.name'].toLowerCase().contains('windows') ? 'JMeterPluginsCMD.bat' : 'JMeterPluginsCMD.sh'
+	private String plotCommand = 'JMeterPluginsCMD.sh'
     def run() { run(options) }
 
     def run(String _options) {
