@@ -8,13 +8,13 @@ properties([
 	
 podTemplate(containers: [
     containerTemplate(name: 'jmeter', image: 'ronniehuang/jmeter-groovy:latest', ttyEnabled: true, command: 'cat',alwaysPullImage: true)
-  ]) {
-  lock("ApiDemoPerformance"){stage('GoogleDemo Test project') {
+  ]) {node(POD_LABEL) {
   
     container('jmeter') {
 		def MainFolder = "PerformanceApiDemo"
 		def ReportFolder = "PerformanceApiDemo/Result"
-		def jmeter = "${JMETER_HOME}/bin/jmeter"
+		def jmeter = "/opt/apache-jmeter-5.2.1/bin/jmeter"
+		def groovy = "/usr/bin/groovy/bin/groovy"
 		def loadEnv = "$params.environment"
 		def loadtype = "$params.loadType"
 		def DurationSeconds = ("$params.duration").toInteger()*60
@@ -23,6 +23,7 @@ podTemplate(containers: [
 			checkout scm
 
 			dir(MainFolder) {
+			    sh "env"
 				sh 'rm -f -R Result/ErrorLog_ApiDemo.jtl'
 				sh 'rm -f -R Result/rt_PT_ResponseTime_ApiDemo.csv'
 			}
@@ -32,44 +33,46 @@ podTemplate(containers: [
 				parallel(
 					Monitor:{
 						dir(ReportFolder) {
-							bat "echo 'if  monitor'"
+							sh "echo 'if  monitor'"
 						}
 					},
 					Loadgen:{
 						dir(MainFolder) {
-							bat "$jmeter -n -t Scripts/ApiDemo.jmx -JDuration=$DurationSeconds -JEnvFile=$loadEnv -JLoadFile=$loadtype -j Result/PT_ApiDemo.log"
+							sh "$jmeter -n -t scripts/ApiDemo.jmx -JDuration=30 -JEnvFile=$loadEnv -JLoadFile=$loadtype -j Result/PT_ApiDemo.log"
 						}
 					}
 				)}
 		}
 		stage('Results') {
 			catchError {
-				dir(MainFolder) {
-					bat "grep -e 'All thread groups have been started' -e 'Notifying test listeners of end of test' result/PT_ApiDemo.log   | tr ',' ' '   | cut -d' ' -f1-2  1>Result/test_time"
-				}
 				dir(ReportFolder) {
-					withEnv(["PATH+GROOVY=${tool(name: 'groovy')}/bin"]) {
-						withEnv(["PATH+JMETER=${tool(name: 'jmeter')}/bin"]) { // JMeterPlotter needs PATH entry
-							sh """
-								groovy -e "new JMeterPlotter(base: '../Result').input('rt_PT_ResponseTime_ApiDemo.csv') .output('../Result/ResponseTimes.html').run('--paint-markers yes --line-weight 0 --plugin-type ResponseTimesOverTime')"
-							"""
-							
-						}
+				    sh "grep -e 'All thread groups have been started' -e 'Notifying test listeners of end of test' PT_ApiDemo.log   | tr ',' ' '   | cut -d' ' -f1-2  1>test_time"
+					
 						sh """
 							cat ../Result/ErrorLog_ApiDemo.jtl  | groovy ErrorReport.groovy       > Errors.html
-							cat ../Result/rt_PT_ResponseTime_ApiDemo.csv   | groovy CSVPlotter.groovy  10000 > AllTransactions.html
+							cat ../Result/rt_PT_ResponseTime_ApiDemo.csv   | groovy CSVPlotter.groovy  1000 > AllTransactions.html
 						"""
-					}
-				}
-				dir(ReportFolder) {
-					perfReport configType: 'PRT', modeOfThreshold: true, nthBuildNumber: currentBuild.previousBuild.number, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 20.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 10.0, relativeUnstableThresholdPositive: 10.0, sourceDataFiles: 'rt_PT_ResponseTime_ApiDemo.csv'
+						withEnv(["PATH+JMETER=/opt/apache-jmeter-5.2.1/bin:/usr/sbin:/usr/bin:/sbin:/bin"]) { // JMeterPlotter needs PATH entry
+							sh """
+							    export PATH=PATH:/opt/java/openjdk/bin:/usr/bin
+							    /*/opt/apache-jmeter-5.2.1/bin/JMeterPluginsCMD.sh --generate-png test.png --input-jtl rt_PT_ResponseTime_ApiDemo.csv --plugin-type ResponseTimesOverTime --width 800 --height 600
+								groovy -e "new JMeterPlotter().input('rt_PT_ResponseTime_ApiDemo.csv') .output('ResponseTimes.html').run('--paint-markers yes --line-weight 0 --plugin-type ResponseTimesOverTime')"
+								*/
+							"""
+
+						}
+					
 				}
 			}
+			dir(ReportFolder) {
+				perfReport configType: 'PRT', modeOfThreshold: true, nthBuildNumber: currentBuild.previousBuild.number, percentiles: '0,50,90,100', relativeFailedThresholdNegative: 20.0, relativeFailedThresholdPositive: 20.0, relativeUnstableThresholdNegative: 10.0, relativeUnstableThresholdPositive: 10.0, sourceDataFiles: 'rt_PT_ResponseTime_ApiDemo.csv'
+			}
+			
 		}
 		stage('Teardown') {
 			catchError {
 				dir(ReportFolder) {
-					publishHTML reportDir: '*.html,*.csv,*.jtl', // this archives the entire target folder
+					publishHTML reportDir: '.', // this archives the entire target folder
 									reportFiles: findFiles(glob: '*.html').join(','), 
 									reportTitles: '',
 									reportName: 'Detailed Results', 
@@ -77,5 +80,5 @@ podTemplate(containers: [
 				}
 			}
 		}
-	}}}
+	}}
 }

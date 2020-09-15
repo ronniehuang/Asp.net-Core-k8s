@@ -23,8 +23,8 @@ class JMeterPlotter {
 
     private Map pngs             // filename to image map (internal, temp)
     //private String plotCommand = System.properties['os.name'].toLowerCase().contains('windows') ? 'JMeterPluginsCMD.bat' : 'JMeterPluginsCMD.sh'
-	private String plotCommand = '/opt/apache-jmeter-5.2.1/bin/JMeterPluginsCMD.sh'
-    def run() { println 'start generate-png' }
+	private String plotCommand = 'JMeterPluginsCMD.sh'
+    def run() { run(options) }
 
     def run(String _options) {
 		
