@@ -40,7 +40,7 @@ class JMeterPlotter {
             pngs[it] = png
         }
         writeHtml(output)
-    }
+    } 
 
     def writeHtml(output) {
         def out = output ? new File(base, output) : System.out
