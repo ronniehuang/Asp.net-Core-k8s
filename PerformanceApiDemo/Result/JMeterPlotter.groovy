@@ -27,11 +27,12 @@ class JMeterPlotter {
     def run() { run(options) }
 
     def run(String _options) {
+		println 'start generate-png'
         pngs = [:]
         new FileNameFinder().getFileNames(base, input).each {
             def png = File.createTempFile('jmeter', '.png')
             png.deleteOnExit()
-			println 'start generate-png'
+			
             def cmd = [plotCommand, '--width', width, '--height', height, '--relative-times', 'no', '--paint-gradient', 'no', '--input-jtl', it, '--generate-png', png]
             cmd.addAll "$options ${_options}".split(/ +/)
             cmd.execute().with {
