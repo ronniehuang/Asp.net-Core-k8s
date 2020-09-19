@@ -1,7 +1,7 @@
 {
     "MainThreads": "20",
 	"MainThreadsRampup": "120",
-	"MaxThroughput":"60",
+	"MaxThroughput":"600",
 	"GetSingleID":"80",
 	"PostName":"20",
 	"PutName":"50",
