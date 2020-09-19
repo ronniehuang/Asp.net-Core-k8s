@@ -23,7 +23,6 @@ podTemplate(containers: [
 			checkout scm
 
 			dir(MainFolder) {
-			    sh "env"
 				sh 'rm -f -R Result/ErrorLog_ApiDemo.jtl'
 				sh 'rm -f -R Result/rt_PT_ResponseTime_ApiDemo.csv'
 			}
