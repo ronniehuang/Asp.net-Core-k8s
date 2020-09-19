@@ -37,7 +37,7 @@ podTemplate(containers: [
 					},
 					Loadgen:{
 						dir(MainFolder) {
-							sh "$jmeter -n -t scripts/ApiDemo.jmx -JDuration=30 -JEnvFile=$loadEnv -JLoadFile=$loadtype -j Result/PT_ApiDemo.log"
+							sh "$jmeter -n -t scripts/ApiDemo.jmx -JDuration=${DurationSeconds} -JEnvFile=$loadEnv -JLoadFile=$loadtype -j Result/PT_ApiDemo.log"
 						}
 					}
 				)}
