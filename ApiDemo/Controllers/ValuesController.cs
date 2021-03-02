@@ -23,7 +23,7 @@ namespace ApiDemo.Controllers
             await WaitAndApologizeAsync();
             CommonDb db = new CommonDb();
             DataSet ds = new DataSet();
-            db.GetDataSet("spApiDemoNameList 1,0,'',''", out ds);
+            db.spApiDemoNameList(1,0,"","", out ds);
             if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
                 string returnJson = "{\"total\":" + ds.Tables[0].Rows.Count.ToString() + ",\"data\":" + JsonConvert.SerializeObject(ds.Tables[0], Formatting.Indented) + "}";
@@ -48,7 +48,7 @@ namespace ApiDemo.Controllers
             await WaitAndApologizeAsync();
             CommonDb db = new CommonDb();
             DataSet ds = new DataSet();
-            db.GetDataSet("spApiDemoNameList 2,'"+ id.ToString()+ "','',''", out ds);
+            db.spApiDemoNameList(2,id, "","", out ds);
             if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0 )
             {
                 DataRow dr = ds.Tables[0].Rows[0];
@@ -73,7 +73,7 @@ namespace ApiDemo.Controllers
                 string Value = orderList["value"].ToString();
                 CommonDb db = new CommonDb();
                 DataSet ds = new DataSet();
-                db.GetDataSet("spApiDemoNameList 3,0,'" + Name + "','"+ Value + "'", out ds);
+                db.spApiDemoNameList(3,0, Name , Value , out ds);
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     db.CloseDatabase();
@@ -97,7 +97,7 @@ namespace ApiDemo.Controllers
                 string Value = orderList["value"].ToString();
                 CommonDb db = new CommonDb();
                 DataSet ds = new DataSet();
-                db.GetDataSet("spApiDemoNameList 4,"+ id + ",'" + Name + "','" + Value + "'", out ds);
+                db.spApiDemoNameList(4,id , Name , Value, out ds);
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     db.CloseDatabase();
@@ -117,7 +117,7 @@ namespace ApiDemo.Controllers
             {
                 CommonDb db = new CommonDb();
                 DataSet ds = new DataSet();
-                db.GetDataSet("spApiDemoNameList 5," + id + ",'',''", out ds);
+                db.spApiDemoNameList(5, id ,"","", out ds);
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     db.CloseDatabase();

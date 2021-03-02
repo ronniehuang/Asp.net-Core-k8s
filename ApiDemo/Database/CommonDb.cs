@@ -85,7 +85,48 @@ namespace ApiDemo.Controllers
                 throw new Exception(strErr);
             }
         }
+        public int spApiDemoNameList(int iType, int orderID , string Name, string Value, out DataSet dsAll)
+        {
+            dsAll = null;
+            if (!ConnectionIsValid())
+            {
+                this.OpenDatabase();
+            }
+            try
+            {
 
+                System.Data.SqlClient.SqlCommand myCommand = new System.Data.SqlClient.SqlCommand("spApiDemoNameList", conn);
+                myCommand.CommandType = CommandType.StoredProcedure;
+                myCommand.CommandTimeout = 600;
+                
+                myCommand.Parameters.Add("@type", SqlDbType.Int);
+                myCommand.Parameters["@type"].Value = iType;
+                myCommand.Parameters.Add("@id", SqlDbType.BigInt);
+                myCommand.Parameters["@id"].Value = orderID;
+                myCommand.Parameters.Add("@name", SqlDbType.VarChar);
+                myCommand.Parameters["@name"].Value = Name;
+                myCommand.Parameters.Add("@value", SqlDbType.VarChar);
+                myCommand.Parameters["@value"].Value = Value;
+                SqlParameter outputParam = myCommand.Parameters.Add("@ReturnVal", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.ReturnValue;
+
+                DataSet dsTemp = new DataSet();
+                SqlDataAdapter adapter = new SqlDataAdapter(myCommand);
+
+                adapter.SelectCommand = myCommand;
+
+                adapter.Fill(dsTemp);
+                dsAll = dsTemp;
+                return Convert.ToInt32(outputParam.Value);
+            }
+            catch (Exception ex)
+            {
+                string strErr;
+                strErr = ("spApiDemoNameList £º" + ex.Message);
+                throw new Exception(strErr);
+
+            }
+        }
 
     }
 }
