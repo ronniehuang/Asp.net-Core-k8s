@@ -1,3 +1,4 @@
 ﻿{
-  "LocalDB": "server=192.168.1.118,31433; uid=ApiDemo;pwd=2wsx3edc$RFV;database=ApiDemo;Min Pool Size=10; Max Pool Size=100;"
+  "LocalDB": "server=192.168.1.118,31433; uid=ApiDemo;pwd=2wsx3edc$RFV;database=ApiDemo;Min Pool Size=10; Max Pool Size=100;",
+  "LocalDBK8S": "server=192.168.1.118,31433; uid=ApiDemo;pwd=2wsx3edc$RFV;database=ApiDemo;Min Pool Size=10; Max Pool Size=100;"
 }

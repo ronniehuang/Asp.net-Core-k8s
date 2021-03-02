@@ -13,4 +13,11 @@ namespace Models
         [DataMember]
         public string Email { get; set; }
     }
+    public class MyCustomModels
+    {
+        [DataMember]
+        public int total { get; set; }
+        [DataMember]
+        public List<MyCustomModel> customers { get; set; }
+    }
 }
