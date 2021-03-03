@@ -12,3 +12,5 @@
 /PerformanceApiDemo/jmeter.log
 /PerformanceApiDemo/Result/ErrorLog_ApiDemo.jtl
 /PerformanceApiDemo/Result/rt_PT_ResponseTime_ApiDemo.csv
+/PythonTest/allure_result
+/PythonTest/__pycache__

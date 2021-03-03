@@ -14,15 +14,17 @@ node(POD_LABEL) {
 				dir("PythonTest"){
 					catchError{
 						sh 'pytest PythonDemo.py --alluredir=allure_result'
+						sh 'chmod 777 allure_result'
 					}
 				}
 			}
-			stage('publish report') {
-				dir("PythonTest"){
-					allure([
-					includeProperties: false, jdk: '', reportBuildPoicy: 'ALWAYS', results: [[path: 'allure_result']]
-					])
-					}
+			
+			}
+		stage('publish report') {
+			dir("PythonTest"){
+				allure([
+				includeProperties: false, jdk: '', reportBuildPoicy: 'ALWAYS', results: [[path: 'allure_result']]
+				])
 				}
 			}
 		}
