@@ -1,0 +1,4 @@
+{
+  "APIURL": "http://192.168.1.118:30000/api/pythondemo",
+  "LocalAPIURL": "http://localhost:5000/api/pythondemo"
+}
