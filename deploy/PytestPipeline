@@ -1,0 +1,31 @@
+podTemplate(containers: [
+    containerTemplate(name: 'pytest', image: 'ronniehuang/pytestwithallure:latest', ttyEnabled: true, command: 'cat')
+  ]) {
+
+node(POD_LABEL) {
+	stage('GoogleDemo Test project') {
+		container('pytest') {
+			stage('checkout  code') {
+				sh 'rm -f -R PythonTest'
+				checkout scm
+			}
+			
+			stage('execution test') {
+				dir("PythonTest"){
+					catchError{
+						sh 'pytest PythonDemo.py --alluredir=allure_result'
+					}
+				}
+			}
+			stage('publish report') {
+				dir("PythonTest"){
+					allure([
+					includeProperties: false, jdk: '', reportBuildPoicy: 'ALWAYS', results: [[path: 'allure_result']]
+					])
+					}
+				}
+			}
+		}
+	}
+}
+
