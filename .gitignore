@@ -14,3 +14,5 @@
 /PerformanceApiDemo/Result/rt_PT_ResponseTime_ApiDemo.csv
 /PythonTest/allure_result
 /PythonTest/__pycache__
+/python-selenium-bdd/.pytest_cache
+/python-selenium-bdd/allure-results
