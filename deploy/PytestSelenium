@@ -1,15 +1,16 @@
 podTemplate(containers: [
-    containerTemplate(name: 'pytest', image: 'ronniehuang/pytestwithallure:latest', ttyEnabled: true, command: 'cat')
+    containerTemplate(name: 'pytest', image: 'ronniehuang/image_seleniumchoromenetcore:latest', ttyEnabled: true, command: 'cat')
   ]) {
 
 node(POD_LABEL) {
 	stage('GoogleDemo Test project') {
 		container('pytest') {
 			stage('Install Selenium') {
+				sh 'pip install -U requests'
+				sh 'pip install -U pytest'
+				sh 'pip install allure-pytest'
 				sh 'pip install behave'
-				sh 'pip install selenium'
 				sh 'pip install allure-behave'
-				sh 'pip install chromedriver_binary==88.0.4324.96'
 			}
 			stage('checkout  code') {
 				sh 'rm -f -R python-selenium-bdd'
