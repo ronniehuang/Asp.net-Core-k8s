@@ -1,0 +1,5 @@
+pip install behave
+pip install selenium
+pip install allure-behave
+pip install chromedriver_binary==88.0.4324.96
+behave -f allure_behave.formatter:AllureFormatter -o allure-results tests\features\dashboard.feature
