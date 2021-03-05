@@ -3,7 +3,7 @@ podTemplate(containers: [
   ]) {
 
 node(POD_LABEL) {
-	stage('GoogleDemo Test project') {
+	stage('AspApiDemo Test project') {
 		container('pytest') {
 			stage('checkout  code') {
 				sh 'rm -f -R PythonTest'

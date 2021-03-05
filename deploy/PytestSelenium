@@ -1,0 +1,38 @@
+podTemplate(containers: [
+    containerTemplate(name: 'pytest', image: 'ronniehuang/pytestwithallure:latest', ttyEnabled: true, command: 'cat')
+  ]) {
+
+node(POD_LABEL) {
+	stage('GoogleDemo Test project') {
+		container('pytest') {
+			stage('Install Selenium') {
+				sh 'pip install behave'
+				sh 'pip install selenium'
+				sh 'pip install allure-behave'
+				sh 'pip install chromedriver_binary==88.0.4324.96'
+			}
+			stage('checkout  code') {
+				sh 'rm -f -R python-selenium-bdd'
+				checkout scm
+			}
+			stage('execution test') {
+				dir("python-selenium-bdd"){
+					catchError{
+						sh 'behave -f allure_behave.formatter:AllureFormatter -o allure-results tests\features\dashboard.feature'
+						sh 'chmod 777 allure_result'
+					}
+				}
+			}
+			
+			}
+		stage('publish report') {
+			dir("python-selenium-bdd"){
+				allure([
+				includeProperties: false, jdk: '', reportBuildPoicy: 'ALWAYS', results: [[path: 'allure-results']]
+				])
+				}
+			}
+		}
+	}
+}
+
