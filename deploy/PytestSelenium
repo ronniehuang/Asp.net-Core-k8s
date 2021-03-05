@@ -18,7 +18,7 @@ node(POD_LABEL) {
 			stage('execution test') {
 				dir("python-selenium-bdd"){
 					catchError{
-						sh 'behave -f allure_behave.formatter:AllureFormatter -o allure-results tests\features\dashboard.feature'
+						sh 'behave -f allure_behave.formatter:AllureFormatter -o allure-results tests/features/dashboard.feature'
 						sh 'chmod 777 allure_result'
 					}
 				}
