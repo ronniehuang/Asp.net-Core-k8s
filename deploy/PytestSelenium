@@ -5,26 +5,25 @@ podTemplate(containers: [
 node(POD_LABEL) {
 	stage('GoogleDemo Test project') {
 		container('pytest') {
-			stage('Install Selenium') {
-				sh 'pip install -U requests'
-				sh 'pip install -U pytest'
-				sh 'pip install allure-pytest'
-				sh 'pip install behave'
-				sh 'pip install allure-behave'
-			}
-			stage('checkout  code') {
-				sh 'rm -f -R python-selenium-bdd'
-				checkout scm
-			}
-			stage('execution test') {
-				dir("python-selenium-bdd"){
-					catchError{
-						sh 'behave -f allure_behave.formatter:AllureFormatter -o allure-results tests/features/dashboard.feature'
-						sh 'chmod 777 allure_result'
+				stage('Install Selenium') {
+					sh 'pip3 install -U requests'
+					sh 'pip3 install -U pytest'
+					sh 'pip3 install allure-pytest'
+					sh 'pip3 install behave'
+					sh 'pip3 install allure-behave'
+				}
+				stage('checkout  code') {
+					sh 'rm -f -R python-selenium-bdd'
+					checkout scm
+				}
+				stage('execution test') {
+					dir("python-selenium-bdd"){
+						catchError{
+							sh 'behave -f allure_behave.formatter:AllureFormatter -o allure-results tests/features/dashboard.feature'
+						}
+						sh 'chmod 777 allure-results'
 					}
 				}
-			}
-			
 			}
 		stage('publish report') {
 			dir("python-selenium-bdd"){

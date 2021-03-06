@@ -3,7 +3,7 @@ podTemplate(containers: [
   ]) {
 
 node(POD_LABEL) {
-	stage('AspApiDemo Test project') {
+		stage('AspApiDemo Test project') {
 		container('pytest') {
 			stage('checkout  code') {
 				sh 'rm -f -R PythonTest'
@@ -14,12 +14,12 @@ node(POD_LABEL) {
 				dir("PythonTest"){
 					catchError{
 						sh 'pytest PythonDemo.py --alluredir=allure_result'
-						sh 'chmod 777 allure_result'
 					}
+					sh 'chmod 777 allure_result'
 				}
 			}
 			
-			}
+		}
 		stage('publish report') {
 			dir("PythonTest"){
 				allure([
