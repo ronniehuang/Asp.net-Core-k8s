@@ -19,11 +19,10 @@ class WebApp:
             self.driver = webdriver.Firefox()
         elif str(settings['browser']).lower() == "chrome":
             self.driver = webdriver.Chrome()
-        elif 
+        else:
             chrome_options = Options()  
             chrome_options.add_argument("--headless")  
             self.driver = webdriver.Chrome(chrome_options=chrome_options)
-        
 
     def get_driver(self):
         return self.driver
